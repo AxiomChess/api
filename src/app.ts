@@ -21,6 +21,7 @@ import {
 import { createAnalysesRoutes } from "./routes/analyses.js"
 import { createAnalyzeRoutes } from "./routes/analyze.js"
 import { createOpenApiRoutes } from "./routes/openapi.js"
+import { createSitesRoutes } from "./routes/sites.js"
 import {
   createLibraryGameAnalyzer,
   type GameAnalyzer,
@@ -114,6 +115,7 @@ export const createApp = async (
   })
 
   app.route("/", createOpenApiRoutes())
+  app.route("/", createSitesRoutes())
   app.route(
     "/",
     createAnalyzeRoutes({

@@ -194,10 +194,93 @@
       "get": {
         "operationId": "listSites",
         "summary": "List supported sites and capabilities",
-        "description": "Implemented in a later roadmap task (T20). Listed here to match PROJECT_SPEC.md route table.",
+        "description": "Returns the adapters package sites manifest (version, site ids, capabilities, allowlisted hosts). Matches @axiomchess/adapters SITES_MANIFEST / sites.manifest.json.",
         "responses": {
-          "501": {
-            "description": "Not implemented yet (T20)"
+          "200": {
+            "description": "Supported sites manifest",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["version", "sites"],
+                  "properties": {
+                    "version": {
+                      "type": "integer",
+                      "const": 1
+                    },
+                    "sites": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "displayName",
+                          "officialBaseUrl",
+                          "documentationUrl",
+                          "auth",
+                          "variants",
+                          "capabilities",
+                          "allowlistedHosts",
+                          "rateLimitWaitMs",
+                          "notes"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "displayName": {
+                            "type": "string"
+                          },
+                          "officialBaseUrl": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "documentationUrl": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "auth": {
+                            "type": "string",
+                            "enum": ["none"]
+                          },
+                          "variants": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": ["standard"]
+                            }
+                          },
+                          "capabilities": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "parse_url",
+                                "fetch_game",
+                                "list_recent_games"
+                              ]
+                            }
+                          },
+                          "allowlistedHosts": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "rateLimitWaitMs": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "notes": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

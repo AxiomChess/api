@@ -53,7 +53,7 @@ OpenAPI document: `GET /v1/openapi.json` (source `openapi/openapi-v1.json`).
 | POST | `/v1/analyze/username` | List recent public games; optional analyze queue |
 | GET | `/v1/analyses/{id}` | Get analysis job/result |
 | GET | `/v1/openapi.json` | OpenAPI 3.1 document |
-| GET | `/v1/sites` | Listed in OpenAPI; implemented in T20 |
+| GET | `/v1/sites` | Supported sites and capabilities (adapters manifest) |
 
 URL ingest rejects non-allowlisted hosts. Adapter tests and API contract tests use fixtures / mocks; no live Chess.com/Lichess calls in CI.
 
