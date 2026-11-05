@@ -1,0 +1,99 @@
+import type { Pool, PoolClient } from "pg"
+
+type Queryable = Pool | PoolClient
+
+export type AnalysisStatus = "queued" | "running" | "completed" | "failed"
+
+export type AnalysisRow = {
+  id: string
+  status: AnalysisStatus
+  normalized_pgn: string
+  pgn_content_hash: string
+  engine_policy_id: string
+  result_json: unknown
+  error_code: string | null
+  error_message: string | null
+  created_at: Date
+  updated_at: Date
+  completed_at: Date | null
+  expires_at: Date
+}
+
+export type InsertAnalysisInput = {
+  status?: AnalysisStatus
+  normalizedPgn: string
+  pgnContentHash: string
+  enginePolicyId?: string
+  resultJson?: unknown
+  errorCode?: string | null
+  errorMessage?: string | null
+  expiresAt: Date
+}
+
+export const insertAnalysis = async (
+  db: Queryable,
+  input: InsertAnalysisInput,
+): Promise<AnalysisRow> => {
+  const result = await db.query<AnalysisRow>(
+    `
+      INSERT INTO analyses (
+        status,
+        normalized_pgn,
+        pgn_content_hash,
+        engine_policy_id,
+        result_json,
+        error_code,
+        error_message,
+        expires_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
+    `,
+    [
+      input.status ?? "queued",
+      input.normalizedPgn,
+      input.pgnContentHash,
+      input.enginePolicyId ?? "engine-v1",
+      input.resultJson === undefined ? null : input.resultJson,
+      input.errorCode ?? null,
+      input.errorMessage ?? null,
+      input.expiresAt.toISOString(),
+    ],
+  )
+
+  const row = result.rows[0]
+  if (!row) {
+    throw new Error("insertAnalysis returned no row")
+  }
+  return row
+}
+
+export const getAnalysisById = async (
+  db: Queryable,
+  id: string,
+): Promise<AnalysisRow | null> => {
+  const result = await db.query<AnalysisRow>(
+    "SELECT * FROM analyses WHERE id = $1",
+    [id],
+  )
+  return result.rows[0] ?? null
+}
+
+export const deleteAnalysisById = async (
+  db: Queryable,
+  id: string,
+): Promise<boolean> => {
+  const result = await db.query("DELETE FROM analyses WHERE id = $1", [id])
+  return (result.rowCount ?? 0) > 0
+}
+
+export const purgeExpiredAnalyses = async (
+  db: Queryable,
+  now: Date = new Date(),
+): Promise<number> => {
+  const result = await db.query(
+    "DELETE FROM analyses WHERE expires_at < $1",
+    [now.toISOString()],
+  )
+  return result.rowCount ?? 0
+}

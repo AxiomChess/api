@@ -19,22 +19,28 @@
   },
   "files": [
     "dist",
-    "LICENSE"
+    "migrations",
+    "docs",
+    "LICENSE",
+    "NOTICE"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json --pretty false",
     "lint": "eslint . && tsc -p tsconfig.json --noEmit --pretty false",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
+    "migrate": "node dist/migrate-cli.js",
     "start": "node dist/index.js"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.6",
-    "hono": "^4.13.16"
+    "hono": "^4.13.16",
+    "pg": "8.16.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/node": "^22.19.1",
+    "@types/pg": "8.15.5",
     "eslint": "^9.39.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.4",

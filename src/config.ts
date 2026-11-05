@@ -1,7 +1,15 @@
+import {
+  DEFAULT_ANALYSIS_RETENTION_DAYS,
+  parseRetentionDays,
+} from "./db/retention.js"
+
 export type AppConfig = {
   port: number
   host: string
   nodeEnv: string
+  databaseUrl: string | null
+  analysisRetentionDays: number
+  apiKeyPepper: string | null
 }
 
 const DEFAULT_PORT = 3000
@@ -24,9 +32,30 @@ export const loadConfig = (
 
   const nodeEnv = env.NODE_ENV?.trim() || DEFAULT_NODE_ENV
 
+  const databaseUrlRaw = env.DATABASE_URL?.trim()
+  const databaseUrl =
+    databaseUrlRaw && databaseUrlRaw.length > 0 ? databaseUrlRaw : null
+
+  const analysisRetentionDays = parseRetentionDays(env.ANALYSIS_RETENTION_DAYS)
+
+  const pepperRaw = env.API_KEY_PEPPER?.trim()
+  const apiKeyPepper = pepperRaw && pepperRaw.length > 0 ? pepperRaw : null
+
   return {
     port,
     host,
     nodeEnv,
+    databaseUrl,
+    analysisRetentionDays,
+    apiKeyPepper,
   }
 }
+
+export const requireDatabaseUrl = (config: AppConfig): string => {
+  if (!config.databaseUrl) {
+    throw new Error("DATABASE_URL is required")
+  }
+  return config.databaseUrl
+}
+
+export { DEFAULT_ANALYSIS_RETENTION_DAYS }

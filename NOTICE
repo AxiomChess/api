@@ -1,0 +1,8 @@
+Third-party notices for AxiomChess API
+
+## pg (node-postgres)
+
+- Package: pg
+- SPDX: MIT
+- Source: https://github.com/brianc/node-postgres
+- npm: https://www.npmjs.com/package/pg
