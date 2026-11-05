@@ -4,7 +4,7 @@ import { createApp } from "./app.js"
 
 describe("GET /v1/health", () => {
   it("returns liveness summary", async () => {
-    const app = createApp()
+    const app = await createApp({ startWorkers: false })
     const response = await app.request("/v1/health")
 
     expect(response.status).toBe(200)
@@ -16,5 +16,7 @@ describe("GET /v1/health", () => {
       service: "axiomchess-api",
       apiVersion: "v1",
     })
+
+    await app.queue.close()
   })
 })

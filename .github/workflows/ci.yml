@@ -26,8 +26,20 @@ jobs:
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/axiomchess_test
       API_KEY_PEPPER: ci-test-pepper
     steps:
-      - name: Checkout
+      - name: Checkout api
         uses: actions/checkout@v4
+        with:
+          path: api
+      - name: Checkout adapters
+        uses: actions/checkout@v4
+        with:
+          repository: AxiomChess/adapters
+          path: adapters
+      - name: Checkout analyzer
+        uses: actions/checkout@v4
+        with:
+          repository: AxiomChess/analyzer
+          path: analyzer
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -37,13 +49,29 @@ jobs:
         with:
           node-version: "22"
           cache: "pnpm"
-      - name: Install
+          cache-dependency-path: api/pnpm-lock.yaml
+      - name: Build adapters
+        working-directory: adapters
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+      - name: Build analyzer
+        working-directory: analyzer
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+      - name: Install api
+        working-directory: api
         run: pnpm install --frozen-lockfile
       - name: Lint
+        working-directory: api
         run: pnpm lint
       - name: Test
+        working-directory: api
         run: pnpm test
       - name: Build
+        working-directory: api
         run: pnpm build
       - name: Migrate
+        working-directory: api
         run: pnpm migrate

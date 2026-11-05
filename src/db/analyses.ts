@@ -79,6 +79,68 @@ export const getAnalysisById = async (
   return result.rows[0] ?? null
 }
 
+export const updateAnalysisRunning = async (
+  db: Queryable,
+  id: string,
+): Promise<AnalysisRow | null> => {
+  const result = await db.query<AnalysisRow>(
+    `
+      UPDATE analyses
+      SET status = 'running',
+          updated_at = now()
+      WHERE id = $1
+      RETURNING *
+    `,
+    [id],
+  )
+  return result.rows[0] ?? null
+}
+
+export const updateAnalysisCompleted = async (
+  db: Queryable,
+  id: string,
+  resultJson: unknown,
+): Promise<AnalysisRow | null> => {
+  const result = await db.query<AnalysisRow>(
+    `
+      UPDATE analyses
+      SET status = 'completed',
+          result_json = $2,
+          error_code = NULL,
+          error_message = NULL,
+          completed_at = now(),
+          updated_at = now()
+      WHERE id = $1
+      RETURNING *
+    `,
+    [id, resultJson],
+  )
+  return result.rows[0] ?? null
+}
+
+export const updateAnalysisFailed = async (
+  db: Queryable,
+  id: string,
+  errorCode: string,
+  errorMessage: string,
+): Promise<AnalysisRow | null> => {
+  const result = await db.query<AnalysisRow>(
+    `
+      UPDATE analyses
+      SET status = 'failed',
+          result_json = NULL,
+          error_code = $2,
+          error_message = $3,
+          completed_at = now(),
+          updated_at = now()
+      WHERE id = $1
+      RETURNING *
+    `,
+    [id, errorCode, errorMessage],
+  )
+  return result.rows[0] ?? null
+}
+
 export const deleteAnalysisById = async (
   db: Queryable,
   id: string,

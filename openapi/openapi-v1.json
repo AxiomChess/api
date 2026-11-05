@@ -1,0 +1,196 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AxiomChess API",
+    "version": "v1",
+    "description": "Public HTTP API for fair-play analysis. Education-first; never emits a definitive cheater label. Official public site APIs only."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Current host"
+    }
+  ],
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Liveness / readiness summary",
+        "responses": {
+          "200": {
+            "description": "Service is up"
+          }
+        }
+      }
+    },
+    "/v1/analyze/url": {
+      "post": {
+        "operationId": "analyzeByUrl",
+        "summary": "Analyze by public game URL",
+        "description": "SSRF-safe allowlist of known site hosts only. Fetches via official public APIs.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Analysis job accepted"
+          },
+          "400": {
+            "description": "Validation or SSRF rejection"
+          },
+          "404": {
+            "description": "Game not found or private"
+          },
+          "429": {
+            "description": "Upstream rate limited"
+          }
+        }
+      }
+    },
+    "/v1/analyze/pgn": {
+      "post": {
+        "operationId": "analyzeByPgn",
+        "summary": "Analyze by PGN body",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["pgn"],
+                "properties": {
+                  "pgn": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Analysis job accepted"
+          },
+          "400": {
+            "description": "Invalid or oversized PGN"
+          }
+        }
+      }
+    },
+    "/v1/analyze/username": {
+      "post": {
+        "operationId": "analyzeByUsername",
+        "summary": "List recent public games for username + site; optionally queue analysis",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["site", "username"],
+                "properties": {
+                  "site": {
+                    "type": "string",
+                    "enum": ["lichess", "chesscom"]
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "page": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 1
+                  },
+                  "pageSize": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 50,
+                    "default": 10
+                  },
+                  "analyze": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "When true, queue analysis jobs for the returned page"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paged game list (and queued job ids when analyze=true)"
+          },
+          "202": {
+            "description": "Paged list with analysis jobs accepted"
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/v1/analyses/{id}": {
+      "get": {
+        "operationId": "getAnalysis",
+        "summary": "Get analysis job/result",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analysis job snapshot"
+          },
+          "404": {
+            "description": "Unknown analysis id"
+          }
+        }
+      }
+    },
+    "/v1/sites": {
+      "get": {
+        "operationId": "listSites",
+        "summary": "List supported sites and capabilities",
+        "description": "Implemented in a later roadmap task (T20). Listed here to match PROJECT_SPEC.md route table.",
+        "responses": {
+          "501": {
+            "description": "Not implemented yet (T20)"
+          }
+        }
+      }
+    },
+    "/v1/openapi.json": {
+      "get": {
+        "operationId": "getOpenApiDocument",
+        "summary": "OpenAPI 3.1 document for this API version",
+        "responses": {
+          "200": {
+            "description": "OpenAPI document"
+          }
+        }
+      }
+    }
+  }
+}

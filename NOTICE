@@ -6,3 +6,14 @@ Third-party notices for AxiomChess API
 - SPDX: MIT
 - Source: https://github.com/brianc/node-postgres
 - npm: https://www.npmjs.com/package/pg
+
+## redis (node-redis)
+
+- Package: redis
+- SPDX: MIT
+- Source: https://github.com/redis/node-redis
+- npm: https://www.npmjs.com/package/redis
+
+## @axiomchess/adapters / @axiomchess/analyzer
+
+- First-party AxiomChess packages (MIT). Analyzer NOTICE covers Stockfish GPL obligations when the engine binary is used.

@@ -12,6 +12,7 @@ describe("loadConfig", () => {
       databaseUrl: null,
       analysisRetentionDays: DEFAULT_ANALYSIS_RETENTION_DAYS,
       apiKeyPepper: null,
+      redisUrl: null,
     })
   })
 
@@ -23,6 +24,7 @@ describe("loadConfig", () => {
       DATABASE_URL: "postgres://u:p@localhost:5432/db",
       ANALYSIS_RETENTION_DAYS: "14",
       API_KEY_PEPPER: "test-pepper",
+      REDIS_URL: "redis://127.0.0.1:6379",
     })
     expect(config).toEqual({
       port: 8787,
@@ -31,8 +33,10 @@ describe("loadConfig", () => {
       databaseUrl: "postgres://u:p@localhost:5432/db",
       analysisRetentionDays: 14,
       apiKeyPepper: "test-pepper",
+      redisUrl: "redis://127.0.0.1:6379",
     })
   })
+
 
   it("rejects invalid PORT", () => {
     expect(() => loadConfig({ PORT: "0" })).toThrow(/Invalid PORT/)

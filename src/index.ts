@@ -1,10 +1,21 @@
 import { serve } from "@hono/node-server"
 
 import { createApp } from "./app.js"
-import { loadConfig } from "./config.js"
+import { loadConfig, requireDatabaseUrl } from "./config.js"
+import { createPool, closePool } from "./db/pool.js"
+import { createPostgresAnalysisStore } from "./store/postgres.js"
 
 const config = loadConfig()
-const app = createApp()
+
+const pool = config.databaseUrl
+  ? createPool(requireDatabaseUrl(config))
+  : null
+
+const app = await createApp({
+  ...(pool ? { store: createPostgresAnalysisStore(pool) } : {}),
+  retentionDays: config.analysisRetentionDays,
+  redisUrl: config.redisUrl,
+})
 
 const server = serve(
   {
@@ -14,22 +25,24 @@ const server = serve(
   },
   (info) => {
     console.log(
-      `AxiomChess API listening on http://${info.address}:${info.port} (${config.nodeEnv})`,
+      `AxiomChess API listening on http://${info.address}:${info.port} (${config.nodeEnv}); queue=${app.queue.backend}`,
     )
   },
 )
 
-process.on("SIGINT", () => {
+const shutdown = async (code: number) => {
   server.close()
-  process.exit(0)
+  await app.queue.close()
+  if (pool) {
+    await closePool(pool)
+  }
+  process.exit(code)
+}
+
+process.on("SIGINT", () => {
+  void shutdown(0)
 })
 
 process.on("SIGTERM", () => {
-  server.close((err) => {
-    if (err) {
-      console.error(err)
-      process.exit(1)
-    }
-    process.exit(0)
-  })
+  void shutdown(0)
 })

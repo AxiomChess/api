@@ -10,6 +10,7 @@ export type AppConfig = {
   databaseUrl: string | null
   analysisRetentionDays: number
   apiKeyPepper: string | null
+  redisUrl: string | null
 }
 
 const DEFAULT_PORT = 3000
@@ -41,6 +42,9 @@ export const loadConfig = (
   const pepperRaw = env.API_KEY_PEPPER?.trim()
   const apiKeyPepper = pepperRaw && pepperRaw.length > 0 ? pepperRaw : null
 
+  const redisUrlRaw = env.REDIS_URL?.trim()
+  const redisUrl = redisUrlRaw && redisUrlRaw.length > 0 ? redisUrlRaw : null
+
   return {
     port,
     host,
@@ -48,6 +52,7 @@ export const loadConfig = (
     databaseUrl,
     analysisRetentionDays,
     apiKeyPepper,
+    redisUrl,
   }
 }
 
