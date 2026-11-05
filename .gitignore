@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Builds
+dist/
+build/
+.next/
+coverage/
+out/
+
+# Secrets (never commit real values; use .env.example only)
+.env
+.env.local
+.env.*.local
+
+# Caches and tooling
+.cache/
+.turbo/
+*.tsbuildinfo
+.eslintcache
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Engine temporary files
+*.nnue.tmp
+engine-tmp/
