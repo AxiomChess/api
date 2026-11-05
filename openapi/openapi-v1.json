@@ -46,17 +46,23 @@
           }
         },
         "responses": {
+          "200": {
+            "description": "Cache hit for identical PGN + policy"
+          },
           "202": {
             "description": "Analysis job accepted"
           },
           "400": {
             "description": "Validation or SSRF rejection"
           },
+          "401": {
+            "description": "Invalid API key"
+          },
           "404": {
             "description": "Game not found or private"
           },
           "429": {
-            "description": "Upstream rate limited"
+            "description": "Caller quota or upstream rate limited"
           }
         }
       }
@@ -82,11 +88,20 @@
           }
         },
         "responses": {
+          "200": {
+            "description": "Cache hit for identical PGN + policy"
+          },
           "202": {
             "description": "Analysis job accepted"
           },
           "400": {
             "description": "Invalid or oversized PGN"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Caller analysis quota exceeded"
           }
         }
       }
@@ -140,6 +155,12 @@
           },
           "400": {
             "description": "Validation error"
+          },
+          "401": {
+            "description": "Invalid API key"
+          },
+          "429": {
+            "description": "Caller analysis quota exceeded when analyze=true"
           }
         }
       }

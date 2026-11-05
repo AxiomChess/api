@@ -37,6 +37,28 @@ export const createMemoryAnalysisStore = (): AnalysisStore => {
     return rows.get(id) ?? null
   }
 
+  const findCompletedByHash = async (
+    pgnContentHash: string,
+    enginePolicyId: string,
+    now: Date = new Date(),
+  ): Promise<AnalysisRecord | null> => {
+    let best: AnalysisRecord | null = null
+    for (const row of rows.values()) {
+      if (row.status !== "completed") continue
+      if (row.pgnContentHash !== pgnContentHash) continue
+      if (row.enginePolicyId !== enginePolicyId) continue
+      if (row.expiresAt.getTime() <= now.getTime()) continue
+      if (row.result === null) continue
+      if (
+        best === null ||
+        (row.completedAt?.getTime() ?? 0) > (best.completedAt?.getTime() ?? 0)
+      ) {
+        best = row
+      }
+    }
+    return best
+  }
+
   const markRunning = async (id: string): Promise<AnalysisRecord | null> => {
     const current = rows.get(id)
     if (!current) return null
@@ -93,6 +115,7 @@ export const createMemoryAnalysisStore = (): AnalysisStore => {
   return {
     create,
     getById,
+    findCompletedByHash,
     markRunning,
     markCompleted,
     markFailed,

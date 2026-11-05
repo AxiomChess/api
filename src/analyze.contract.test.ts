@@ -156,6 +156,7 @@ describe("T18 analyze contracts", () => {
   afterEach(async () => {
     if (app) {
       await app.queue.close()
+      await app.rateLimiterHandle.close()
     }
   })
 

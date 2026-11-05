@@ -28,6 +28,14 @@ export type CreateAnalysisInput = {
 export type AnalysisStore = {
   create: (input: CreateAnalysisInput) => Promise<AnalysisRecord>
   getById: (id: string) => Promise<AnalysisRecord | null>
+  /**
+   * Cache lookup: newest non-expired completed analysis for PGN + policy hash.
+   */
+  findCompletedByHash: (
+    pgnContentHash: string,
+    enginePolicyId: string,
+    now?: Date,
+  ) => Promise<AnalysisRecord | null>
   markRunning: (id: string) => Promise<AnalysisRecord | null>
   markCompleted: (
     id: string,

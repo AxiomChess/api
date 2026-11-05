@@ -1,6 +1,8 @@
 import { SITE_ADAPTERS } from "@axiomchess/adapters"
 import { Hono } from "hono"
 
+import { authMiddleware } from "./auth/middleware.js"
+import type { ApiKeyVerifier, AuthVariables } from "./auth/types.js"
 import { ApiError, toErrorBody } from "./errors.js"
 import {
   requestIdMiddleware,
@@ -11,6 +13,11 @@ import {
   createInProcessAnalysisQueue,
   type AnalysisJobQueue,
 } from "./queue/index.js"
+import {
+  createRateLimiter,
+  type RateLimiter,
+  type RateLimiterHandle,
+} from "./rate-limit/index.js"
 import { createAnalysesRoutes } from "./routes/analyses.js"
 import { createAnalyzeRoutes } from "./routes/analyze.js"
 import { createOpenApiRoutes } from "./routes/openapi.js"
@@ -38,6 +45,8 @@ export type CreateAppOptions = {
   adapters?: SiteAdapterRegistry
   retentionDays?: number
   redisUrl?: string | null
+  apiKeyVerifier?: ApiKeyVerifier | null
+  rateLimiter?: RateLimiter
   /**
    * When true, builds an in-process queue wired to the analyzer.
    * Ignored when `queue` is provided.
@@ -45,9 +54,12 @@ export type CreateAppOptions = {
   startWorkers?: boolean
 }
 
-export type AppInstance = Hono<{ Variables: RequestIdVariables }> & {
+type AppVariables = RequestIdVariables & AuthVariables
+
+export type AppInstance = Hono<{ Variables: AppVariables }> & {
   queue: AnalysisJobQueue
   store: AnalysisStore
+  rateLimiterHandle: RateLimiterHandle
 }
 
 export const createApp = async (
@@ -70,8 +82,27 @@ export const createApp = async (
           redisUrl: options.redisUrl ?? null,
         }))
 
-  const app = new Hono<{ Variables: RequestIdVariables }>()
+  const rateLimiterHandle: RateLimiterHandle =
+    options.rateLimiter !== undefined
+      ? {
+          limiter: options.rateLimiter,
+          backend: "memory",
+          close: async () => undefined,
+        }
+      : await createRateLimiter({
+          redisUrl: options.redisUrl ?? null,
+        })
+
+  const rateLimiter = rateLimiterHandle.limiter
+
+  const app = new Hono<{ Variables: AppVariables }>()
   app.use("*", requestIdMiddleware())
+  app.use(
+    "*",
+    authMiddleware({
+      verifier: options.apiKeyVerifier ?? null,
+    }),
+  )
 
   app.get("/v1/health", (c) => {
     const body: HealthResponse = {
@@ -90,6 +121,7 @@ export const createApp = async (
       queue,
       ingest,
       retentionDays,
+      rateLimiter,
     }),
   )
   app.route("/", createAnalysesRoutes(store))
@@ -99,7 +131,7 @@ export const createApp = async (
     if (error instanceof ApiError) {
       return c.json(
         toErrorBody(error, requestId),
-        error.status as 400 | 404 | 429 | 500,
+        error.status as 400 | 401 | 404 | 429 | 500,
       )
     }
     const wrapped = new ApiError({
@@ -113,5 +145,6 @@ export const createApp = async (
   const instance = app as AppInstance
   instance.queue = queue
   instance.store = store
+  instance.rateLimiterHandle = rateLimiterHandle
   return instance
 }

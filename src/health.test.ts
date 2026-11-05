@@ -18,5 +18,6 @@ describe("GET /v1/health", () => {
     })
 
     await app.queue.close()
+    await app.rateLimiterHandle.close()
   })
 })

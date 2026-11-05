@@ -79,6 +79,32 @@ export const getAnalysisById = async (
   return result.rows[0] ?? null
 }
 
+export const findCompletedAnalysisByHash = async (
+  db: Queryable,
+  input: {
+    pgnContentHash: string
+    enginePolicyId: string
+    now?: Date
+  },
+): Promise<AnalysisRow | null> => {
+  const now = input.now ?? new Date()
+  const result = await db.query<AnalysisRow>(
+    `
+      SELECT *
+      FROM analyses
+      WHERE pgn_content_hash = $1
+        AND engine_policy_id = $2
+        AND status = 'completed'
+        AND result_json IS NOT NULL
+        AND expires_at > $3
+      ORDER BY completed_at DESC NULLS LAST
+      LIMIT 1
+    `,
+    [input.pgnContentHash, input.enginePolicyId, now.toISOString()],
+  )
+  return result.rows[0] ?? null
+}
+
 export const updateAnalysisRunning = async (
   db: Queryable,
   id: string,

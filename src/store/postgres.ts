@@ -2,6 +2,7 @@ import type { AnalysisResultV1 } from "@axiomchess/analyzer"
 import type { Pool } from "pg"
 
 import {
+  findCompletedAnalysisByHash,
   getAnalysisById,
   insertAnalysis,
   type AnalysisRow,
@@ -48,6 +49,18 @@ export const createPostgresAnalysisStore = (pool: Pool): AnalysisStore => {
     },
     getById: async (id: string): Promise<AnalysisRecord | null> => {
       const row = await getAnalysisById(pool, id)
+      return row ? toRecord(row) : null
+    },
+    findCompletedByHash: async (
+      pgnContentHash: string,
+      enginePolicyId: string,
+      now?: Date,
+    ): Promise<AnalysisRecord | null> => {
+      const row = await findCompletedAnalysisByHash(pool, {
+        pgnContentHash,
+        enginePolicyId,
+        ...(now !== undefined ? { now } : {}),
+      })
       return row ? toRecord(row) : null
     },
     markRunning: async (id: string): Promise<AnalysisRecord | null> => {

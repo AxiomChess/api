@@ -29,6 +29,8 @@ Config is read from the environment. See `.env.example` for placeholders. Never 
 
 Retention defaults to 30 days (`ANALYSIS_RETENTION_DAYS`). See `docs/retention.md`.
 
+Auth quotas, rate-limit headers, API key hash-at-rest, and PGN+policy response cache: see `docs/quotas.md`.
+
 OpenAPI document: `GET /v1/openapi.json` (source `openapi/openapi-v1.json`).
 
 ## Scripts
