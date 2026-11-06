@@ -27,3 +27,6 @@ Thumbs.db
 # Engine temporary files
 *.nnue.tmp
 engine-tmp/
+
+.vercel
+.env*

@@ -1,4 +1,4 @@
-import { createApp } from "./app.js"
+import { createApp } from "./create-app.js"
 
 /**
  * Vercel / Web Standards entry: default-export the Hono app.

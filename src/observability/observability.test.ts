@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest"
 
-import { createApp } from "../app.js"
+import { createApp } from "../create-app.js"
 import { SiteAdapterError } from "@axiomchess/adapters"
 import { createInProcessAnalysisQueue } from "../queue/in-process.js"
 import { createAnalysisJobHandler } from "../services/jobs.js"

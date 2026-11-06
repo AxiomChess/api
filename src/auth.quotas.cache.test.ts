@@ -10,7 +10,7 @@ import {
 } from "@axiomchess/analyzer"
 import { afterEach, describe, expect, it } from "vitest"
 
-import { createApp, type AppInstance } from "./app.js"
+import { createApp, type AppInstance } from "./create-app.js"
 import { createMemoryApiKeyStore } from "./auth/memory-api-keys.js"
 import { ANONYMOUS_QUOTA, API_KEY_QUOTA } from "./auth/quotas.js"
 import { hashApiKey } from "./db/api-keys.js"

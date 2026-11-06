@@ -15,7 +15,7 @@ import type {
 } from "@axiomchess/adapters"
 import { afterEach, describe, expect, it } from "vitest"
 
-import { createApp, type AppInstance } from "./app.js"
+import { createApp, type AppInstance } from "./create-app.js"
 import { PROJECT_SPEC_V1_PATHS } from "./routes/openapi.js"
 import { createMockGameAnalyzer } from "./services/game-analyzer.js"
 import { createInProcessAnalysisQueue } from "./queue/in-process.js"

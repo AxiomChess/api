@@ -5,7 +5,7 @@ import {
 } from "@axiomchess/adapters"
 import { describe, expect, it } from "vitest"
 
-import { createApp } from "./app.js"
+import { createApp } from "./create-app.js"
 
 describe("GET /v1/sites", () => {
   it("returns adapters sites manifest", async () => {

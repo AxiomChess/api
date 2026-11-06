@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest"
 
-import { createApp, type AppInstance } from "./app.js"
+import { createApp, type AppInstance } from "./create-app.js"
 import { createLibraryGameAnalyzer } from "./services/game-analyzer.js"
 import { createInProcessAnalysisQueue } from "./queue/in-process.js"
 import { createAnalysisJobHandler } from "./services/jobs.js"

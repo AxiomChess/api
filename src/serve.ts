@@ -1,6 +1,6 @@
 import { serve } from "@hono/node-server"
 
-import { createApp } from "./app.js"
+import { createApp } from "./create-app.js"
 import { createPostgresApiKeyVerifier } from "./auth/postgres-api-keys.js"
 import { loadConfig, requireDatabaseUrl } from "./config.js"
 import { createPool, closePool } from "./db/pool.js"
