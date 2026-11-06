@@ -3,6 +3,7 @@ import { Hono } from "hono"
 
 import { authMiddleware } from "./auth/middleware.js"
 import type { ApiKeyVerifier, AuthVariables } from "./auth/types.js"
+import { corsMiddleware } from "./cors.js"
 import { ApiError, toErrorBody } from "./errors.js"
 import {
   requestIdMiddleware,
@@ -104,6 +105,7 @@ export const createApp = async (
   const rateLimiter = rateLimiterHandle.limiter
 
   const app = new Hono<{ Variables: AppVariables }>()
+  app.use("*", corsMiddleware())
   app.use("*", requestIdMiddleware())
   app.use(
     "*",
