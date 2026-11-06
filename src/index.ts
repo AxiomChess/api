@@ -4,6 +4,7 @@ import { createApp } from "./app.js"
 import { createPostgresApiKeyVerifier } from "./auth/postgres-api-keys.js"
 import { loadConfig, requireDatabaseUrl } from "./config.js"
 import { createPool, closePool } from "./db/pool.js"
+import { rootLogger } from "./observability/logger.js"
 import { createPostgresAnalysisStore } from "./store/postgres.js"
 
 const config = loadConfig()
@@ -31,9 +32,13 @@ const server = serve(
     hostname: config.host,
   },
   (info) => {
-    console.log(
-      `AxiomChess API listening on http://${info.address}:${info.port} (${config.nodeEnv}); queue=${app.queue.backend}; rateLimit=${app.rateLimiterHandle.backend}`,
-    )
+    rootLogger.info("api_listen", {
+      host: info.address,
+      port: info.port,
+      nodeEnv: config.nodeEnv,
+      queueBackend: app.queue.backend,
+      rateLimitBackend: app.rateLimiterHandle.backend,
+    })
   },
 )
 

@@ -16,6 +16,11 @@ import {
   DEFAULT_ENGINE_POLICY_ID,
   lookupCompletedAnalysisCache,
 } from "../services/analysis-cache.js"
+import {
+  METRIC_NAMES,
+  rootLogger,
+  rootMetrics,
+} from "../observability/index.js"
 import type { IngestService } from "../services/ingest.js"
 import { hashNormalizedPgn } from "../services/pgn-hash.js"
 import type { AnalysisRecord, AnalysisStore } from "../store/types.js"
@@ -164,6 +169,7 @@ export const createAnalyzeRoutes = (deps: AnalyzeRoutesDeps): Hono<{
     },
     normalizedPgn: string,
   ): Promise<{ record: AnalysisRecord; cacheHit: boolean }> => {
+    const requestId = c.get("requestId")
     const pgnContentHash = hashNormalizedPgn(normalizedPgn)
     const cached = await lookupCompletedAnalysisCache(deps.store, {
       pgnContentHash,
@@ -171,12 +177,21 @@ export const createAnalyzeRoutes = (deps: AnalyzeRoutesDeps): Hono<{
     })
     if (cached.hit) {
       c.header(CACHE_HIT_HEADER, "HIT")
+      rootMetrics.increment(METRIC_NAMES.cacheHitsTotal)
+      rootMetrics.setGauge(METRIC_NAMES.queueDepth, deps.queue.depth())
+      rootLogger.info("analysis_cache_hit", {
+        requestId,
+        pgnContentHash,
+        analysisId: cached.record.id,
+        enginePolicyId,
+      })
       await consumeAnalysisQuota(c, deps, 1)
       return { record: cached.record, cacheHit: true }
     }
 
     await consumeAnalysisQuota(c, deps, 1)
     c.header(CACHE_HIT_HEADER, "MISS")
+    rootMetrics.increment(METRIC_NAMES.cacheMissesTotal)
     const record = await deps.store.create({
       normalizedPgn,
       pgnContentHash,
@@ -185,6 +200,14 @@ export const createAnalyzeRoutes = (deps: AnalyzeRoutesDeps): Hono<{
       status: "queued",
     })
     await deps.queue.enqueue(record.id)
+    rootMetrics.setGauge(METRIC_NAMES.queueDepth, deps.queue.depth())
+    rootLogger.info("analysis_enqueued", {
+      requestId,
+      pgnContentHash,
+      analysisId: record.id,
+      enginePolicyId,
+      queueDepth: deps.queue.depth(),
+    })
     return { record, cacheHit: false }
   }
 

@@ -10,6 +10,7 @@ import {
 } from "@axiomchess/adapters"
 
 import { ApiError } from "../errors.js"
+import { METRIC_NAMES, rootMetrics } from "../observability/metrics.js"
 
 export const MAX_PGN_BYTES = 512_000
 
@@ -28,6 +29,9 @@ export type IngestService = {
 
 const mapAdapterError = (error: unknown): never => {
   if (error instanceof SiteAdapterError) {
+    if (error.code === "rate_limited") {
+      rootMetrics.increment(METRIC_NAMES.upstream429Total)
+    }
     const status =
       error.code === "not_found" || error.code === "private_or_unavailable"
         ? 404

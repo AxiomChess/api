@@ -8,6 +8,7 @@ import {
   requestIdMiddleware,
   type RequestIdVariables,
 } from "./http/request-id.js"
+import { requestLogMiddleware } from "./observability/middleware.js"
 import {
   createAnalysisQueue,
   createInProcessAnalysisQueue,
@@ -72,7 +73,12 @@ export const createApp = async (
   const ingest = options.ingest ?? createIngestService(adapters)
   const retentionDays = options.retentionDays ?? 30
 
-  const handler = createAnalysisJobHandler({ store, analyzer })
+  const queueRef: { current: AnalysisJobQueue | null } = { current: null }
+  const handler = createAnalysisJobHandler({
+    store,
+    analyzer,
+    queueDepth: () => queueRef.current?.depth() ?? 0,
+  })
 
   const queue =
     options.queue ??
@@ -82,6 +88,7 @@ export const createApp = async (
           handler,
           redisUrl: options.redisUrl ?? null,
         }))
+  queueRef.current = queue
 
   const rateLimiterHandle: RateLimiterHandle =
     options.rateLimiter !== undefined
@@ -98,6 +105,12 @@ export const createApp = async (
 
   const app = new Hono<{ Variables: AppVariables }>()
   app.use("*", requestIdMiddleware())
+  app.use(
+    "*",
+    requestLogMiddleware({
+      queueDepth: () => queue.depth(),
+    }),
+  )
   app.use(
     "*",
     authMiddleware({
