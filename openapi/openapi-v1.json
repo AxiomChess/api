@@ -169,6 +169,7 @@
       "get": {
         "operationId": "getAnalysis",
         "summary": "Get analysis job/result",
+        "description": "Returns 404 for unknown or expired analyses (retention TTL).",
         "parameters": [
           {
             "name": "id",
@@ -183,6 +184,33 @@
         "responses": {
           "200": {
             "description": "Analysis job snapshot"
+          },
+          "404": {
+            "description": "Unknown or expired analysis id"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteAnalysis",
+        "summary": "Erase a stored analysis by id",
+        "description": "Hard-deletes the analysis row (privacy erasure). Default retention is also enforced via expires_at and purgeExpiredAnalyses.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Analysis deleted"
+          },
+          "400": {
+            "description": "Invalid analysis id"
           },
           "404": {
             "description": "Unknown analysis id"

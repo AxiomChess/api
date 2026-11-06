@@ -2,6 +2,7 @@ import type { AnalysisResultV1 } from "@axiomchess/analyzer"
 import type { Pool } from "pg"
 
 import {
+  deleteAnalysisById,
   findCompletedAnalysisByHash,
   getAnalysisById,
   insertAnalysis,
@@ -81,6 +82,9 @@ export const createPostgresAnalysisStore = (pool: Pool): AnalysisStore => {
     ): Promise<AnalysisRecord | null> => {
       const row = await updateAnalysisFailed(pool, id, errorCode, errorMessage)
       return row ? toRecord(row) : null
+    },
+    deleteById: async (id: string): Promise<boolean> => {
+      return deleteAnalysisById(pool, id)
     },
   }
 }

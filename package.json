@@ -30,6 +30,7 @@
     "lint": "eslint . && tsc -p tsconfig.json --noEmit --pretty false",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
+    "secrets:scan": "node scripts/scan-secrets.mjs",
     "migrate": "node dist/migrate-cli.js",
     "start": "node dist/index.js"
   },

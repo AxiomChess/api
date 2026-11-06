@@ -63,6 +63,9 @@ jobs:
       - name: Install api
         working-directory: api
         run: pnpm install --frozen-lockfile
+      - name: Secret pattern scan
+        working-directory: api
+        run: pnpm secrets:scan
       - name: Lint
         working-directory: api
         run: pnpm lint

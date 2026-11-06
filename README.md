@@ -39,6 +39,7 @@ OpenAPI document: `GET /v1/openapi.json` (source `openapi/openapi-v1.json`).
 | --- | --- |
 | `pnpm lint` | ESLint + `tsc --noEmit` |
 | `pnpm test` | Vitest (set `DATABASE_URL` for integration tests) |
+| `pnpm secrets:scan` | Fail on common secret patterns in tracked files |
 | `pnpm build` | Compile TypeScript to `dist/` |
 | `pnpm migrate` | Apply SQL migrations under `migrations/` |
 | `pnpm start` | Run compiled server (`node dist/index.js`) |
@@ -51,7 +52,8 @@ OpenAPI document: `GET /v1/openapi.json` (source `openapi/openapi-v1.json`).
 | POST | `/v1/analyze/url` | Analyze by public game URL (SSRF allowlist) |
 | POST | `/v1/analyze/pgn` | Analyze by PGN body |
 | POST | `/v1/analyze/username` | List recent public games; optional analyze queue |
-| GET | `/v1/analyses/{id}` | Get analysis job/result |
+| GET | `/v1/analyses/{id}` | Get analysis job/result (404 if expired) |
+| DELETE | `/v1/analyses/{id}` | Hard-delete analysis (privacy erasure) |
 | GET | `/v1/openapi.json` | OpenAPI 3.1 document |
 | GET | `/v1/sites` | Supported sites and capabilities (adapters manifest) |
 

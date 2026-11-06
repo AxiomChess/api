@@ -46,4 +46,6 @@ export type AnalysisStore = {
     errorCode: string,
     errorMessage: string,
   ) => Promise<AnalysisRecord | null>
+  /** Hard-delete by id. Returns true when a row was removed. */
+  deleteById: (id: string) => Promise<boolean>
 }

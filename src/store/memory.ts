@@ -112,6 +112,10 @@ export const createMemoryAnalysisStore = (): AnalysisStore => {
     return next
   }
 
+  const deleteById = async (id: string): Promise<boolean> => {
+    return rows.delete(id)
+  }
+
   return {
     create,
     getById,
@@ -119,5 +123,6 @@ export const createMemoryAnalysisStore = (): AnalysisStore => {
     markRunning,
     markCompleted,
     markFailed,
+    deleteById,
   }
 }
