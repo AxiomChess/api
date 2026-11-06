@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@axiomchess/adapters':
-        specifier: file:../adapters
-        version: file:../adapters
+        specifier: github:AxiomChess/adapters#main
+        version: https://codeload.github.com/AxiomChess/adapters/tar.gz/708f6ab815aac5a68e207237a82f82aeb28e32a0
       '@axiomchess/analyzer':
-        specifier: file:../analyzer
-        version: file:../analyzer
+        specifier: github:AxiomChess/analyzer#main
+        version: https://codeload.github.com/AxiomChess/analyzer/tar.gz/4d98e074fd32956d527bd4faab7657dd95ff95ec
       '@hono/node-server':
         specifier: ^2.1.6
         version: 2.1.6(hono@4.13.16)
@@ -51,12 +51,14 @@ importers:
 
 packages:
 
-  '@axiomchess/adapters@file:../adapters':
-    resolution: {directory: ../adapters, type: directory}
+  '@axiomchess/adapters@https://codeload.github.com/AxiomChess/adapters/tar.gz/708f6ab815aac5a68e207237a82f82aeb28e32a0':
+    resolution: {tarball: https://codeload.github.com/AxiomChess/adapters/tar.gz/708f6ab815aac5a68e207237a82f82aeb28e32a0}
+    version: 1.0.0
     engines: {node: '>=20'}
 
-  '@axiomchess/analyzer@file:../analyzer':
-    resolution: {directory: ../analyzer, type: directory}
+  '@axiomchess/analyzer@https://codeload.github.com/AxiomChess/analyzer/tar.gz/4d98e074fd32956d527bd4faab7657dd95ff95ec':
+    resolution: {tarball: https://codeload.github.com/AxiomChess/analyzer/tar.gz/4d98e074fd32956d527bd4faab7657dd95ff95ec}
+    version: 1.0.0
     engines: {node: '>=20'}
 
   '@esbuild/aix-ppc64@0.28.2':
@@ -1153,9 +1155,9 @@ packages:
 
 snapshots:
 
-  '@axiomchess/adapters@file:../adapters': {}
+  '@axiomchess/adapters@https://codeload.github.com/AxiomChess/adapters/tar.gz/708f6ab815aac5a68e207237a82f82aeb28e32a0': {}
 
-  '@axiomchess/analyzer@file:../analyzer': {}
+  '@axiomchess/analyzer@https://codeload.github.com/AxiomChess/analyzer/tar.gz/4d98e074fd32956d527bd4faab7657dd95ff95ec': {}
 
   '@esbuild/aix-ppc64@0.28.2':
     optional: true

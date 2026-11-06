@@ -27,16 +27,18 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json --pretty false",
+    "build:deps": "node scripts/build-git-deps.mjs",
+    "postinstall": "node scripts/build-git-deps.mjs",
     "lint": "eslint . && tsc -p tsconfig.json --noEmit --pretty false",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false",
     "secrets:scan": "node scripts/scan-secrets.mjs",
     "migrate": "node dist/migrate-cli.js",
-    "start": "node dist/index.js"
+    "start": "node dist/serve.js"
   },
   "dependencies": {
-    "@axiomchess/adapters": "file:../adapters",
-    "@axiomchess/analyzer": "file:../analyzer",
+    "@axiomchess/adapters": "github:AxiomChess/adapters#main",
+    "@axiomchess/analyzer": "github:AxiomChess/analyzer#main",
     "@hono/node-server": "^2.1.6",
     "hono": "^4.13.16",
     "pg": "8.16.3",

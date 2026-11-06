@@ -18,6 +18,7 @@ out/
 .turbo/
 *.tsbuildinfo
 .eslintcache
+.vercel/
 
 # OS junk
 .DS_Store
