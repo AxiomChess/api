@@ -37,7 +37,7 @@ export const requestLogMiddleware = (
     try {
       await next()
     } finally {
-      const status = c.res.status
+      const status = (c.res as { status: number }).status
       logger.info("http_request", {
         requestId,
         method: c.req.method,
