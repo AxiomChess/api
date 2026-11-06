@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/AxiomChess/design/main/assets/brand/banner.svg" alt="AxiomChess" width="880" />
+</p>
+
 # api
 
 Public HTTP API for AxiomChess. Hono on Node.js with `@hono/node-server`.
@@ -58,6 +62,10 @@ OpenAPI document: `GET /v1/openapi.json` (source `openapi/openapi-v1.json`).
 | GET | `/v1/sites` | Supported sites and capabilities (adapters manifest) |
 
 URL ingest rejects non-allowlisted hosts. Adapter tests and API contract tests use fixtures / mocks; no live Chess.com/Lichess calls in CI.
+
+## Docs
+
+https://axiomchess.github.io/docs/api-overview.html
 
 ## License
 
