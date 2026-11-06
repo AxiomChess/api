@@ -9,6 +9,7 @@ const toPublicAnalysis = (row: AnalysisRecord) => {
     id: row.id,
     status: row.status,
     enginePolicyId: row.enginePolicyId,
+    normalizedPgn: row.normalizedPgn,
     result: row.result,
     error:
       row.errorCode === null
